@@ -7,7 +7,7 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.card import MDCard
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
-from kivymd.uix.button import MDRaisedButton, MDIconButton
+from kivymd.uix.button import MDRaisedButton, MDIconButton, MDRectangleFlatIconButton
 from kivymd.uix.scrollview import MDScrollView
 
 
@@ -27,7 +27,7 @@ class ConsejosScreen(MDScreen):
         super().__init__(**kwargs)
         self.name = 'consejos'
 
-        # Contenedor principal
+        # --- Layout principal ---
         root = MDBoxLayout(orientation='vertical')
         scroll = MDScrollView(do_scroll_x=False)
         content = MDBoxLayout(
@@ -45,26 +45,25 @@ class ConsejosScreen(MDScreen):
             orientation='vertical',
             padding=(dp(24), dp(20)),
             spacing=dp(14),
-            radius=[20, 20, 20, 20],
-            elevation=0,
-            size_hint=(0.96, None),
+            radius=[16, 16, 16, 16],
+            elevation=1,  # 🔽 sombra reducida
+            size_hint=(0.95, None),
             adaptive_height=True,
             pos_hint={'center_x': 0.5},
-            md_bg_color=(0.95, 0.99, 0.95, 1)  # verde pastel muy suave
+            md_bg_color=(0.95, 0.99, 0.95, 1)
         )
 
-        # Contenedor interior para centrar todo
+        # Contenedor interno
         inner_box = MDBoxLayout(
             orientation='vertical',
             spacing=dp(12),
-            adaptive_height=True,
-            pos_hint={'center_x': 0.5}
+            adaptive_height=True
         )
 
-        # Título
+        # Título principal
         inner_box.add_widget(MDLabel(
             text="Consejo de Seguridad",
-            font_style="H6",
+            font_style="H5",
             halign="center",
             bold=True,
             theme_text_color="Primary"
@@ -81,7 +80,7 @@ class ConsejosScreen(MDScreen):
         )
         inner_box.add_widget(self.label_consejo)
 
-        # Línea separadora
+        # Separador visual
         from kivy.uix.widget import Widget
         from kivy.graphics import Color, Rectangle
         divider = Widget(size_hint_y=None, height=dp(1))
@@ -92,13 +91,16 @@ class ConsejosScreen(MDScreen):
         divider.bind(size=lambda inst, val: setattr(self.rect, 'size', inst.size))
         inner_box.add_widget(divider)
 
-        # Botón centrado
-        btn_nuevo = MDRaisedButton(
+        # Botón "Nuevo consejo"
+        btn_nuevo = MDRectangleFlatIconButton(
             text="Nuevo consejo",
-            md_bg_color=(0.15, 0.6, 0.15, 1),
+            icon="refresh",
+            theme_icon_color="Custom",
+            icon_color=(1, 1, 1, 1),
             text_color=(1, 1, 1, 1),
+            md_bg_color=(0.15, 0.6, 0.15, 1),
             size_hint=(None, None),
-            size=(dp(180), dp(44)),
+            size=(dp(190), dp(44)),
             pos_hint={'center_x': 0.5},
             on_release=self.nuevo_consejo
         )
@@ -143,60 +145,67 @@ class ConsejosScreen(MDScreen):
         for item in noticias:
             card = MDCard(
                 orientation='horizontal',
-                padding=(dp(12), dp(10)),
+                padding=(dp(14), dp(10)),
                 spacing=dp(10),
-                size_hint=(0.96, None),
-                height=dp(80),
+                size_hint=(0.95, None),
+                height=dp(86),
                 radius=[14, 14, 14, 14],
-                elevation=0,
+                elevation=1,  # 🔽 sombra reducida
                 pos_hint={'center_x': 0.5},
                 md_bg_color=(0.96, 0.98, 1, 1)
             )
 
-            left = MDBoxLayout(orientation='vertical', spacing=dp(4))
-            left.add_widget(MDLabel(
+            # Texto
+            text_box = MDBoxLayout(orientation='vertical', spacing=dp(4))
+            text_box.add_widget(MDLabel(
                 text=item['titulo'],
                 font_style='Subtitle1',
                 theme_text_color='Primary'
             ))
-            left.add_widget(MDLabel(
+            text_box.add_widget(MDLabel(
                 text=item['desc'],
                 font_style='Caption',
                 theme_text_color='Secondary'
             ))
 
+            # Icono para abrir enlace
             icon_btn = MDIconButton(
                 icon=item['icon'],
                 pos_hint={'center_y': 0.5},
+                theme_icon_color="Custom",
+                icon_color=(0.1, 0.4, 0.8, 1),
                 on_release=lambda inst, url=item['link']: webbrowser.open(url)
             )
 
-            card.add_widget(left)
+            card.add_widget(text_box)
             card.add_widget(icon_btn)
             content.add_widget(card)
 
-        # Botón inferior
+        # ==============================
+        # BOTÓN FINAL
+        # ==============================
         content.add_widget(
             MDRaisedButton(
                 text="Ver más noticias",
                 md_bg_color=(0.18, 0.6, 0.18, 1),
                 text_color=(1, 1, 1, 1),
                 size_hint=(None, None),
-                size=(dp(180), dp(44)),
+                size=(dp(190), dp(44)),
                 pos_hint={'center_x': 0.5},
+                elevation=1,  # 🔽 sombra reducida
                 on_release=lambda x: webbrowser.open('https://www.mtt.gob.cl')
             )
         )
 
         # Espacio inferior
-        content.add_widget(MDBoxLayout(size_hint_y=None, height=dp(20)))
+        content.add_widget(MDBoxLayout(size_hint_y=None, height=dp(24)))
 
         scroll.add_widget(content)
         root.add_widget(scroll)
         self.add_widget(root)
 
     # ==============================
-    # FUNCIÓN: cambiar consejo con animación
+    # FUNCIÓN: animar cambio de consejo
     # ==============================
     def nuevo_consejo(self, instance):
         new_text = random.choice(CONSEJOS)
@@ -206,7 +215,7 @@ class ConsejosScreen(MDScreen):
             self.label_consejo.text = new_text
 
         def fade_in(*args):
-            Animation(opacity=1, d=0.2).start(self.label_consejo)
+            Animation(opacity=1, d=0.25).start(self.label_consejo)
 
         anim.bind(on_complete=lambda *a: (set_text(), fade_in()))
         anim.start(self.label_consejo)

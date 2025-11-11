@@ -13,6 +13,7 @@ from app.utils.ui import show_snackbar
 import json
 import os
 
+
 class ProfileScreen(MDScreen):
     """Pantalla de perfil de usuario para CiclisApp."""
 
@@ -22,7 +23,11 @@ class ProfileScreen(MDScreen):
         self.md_bg_color = (0.96, 0.96, 0.96, 1)  # Fondo gris muy claro #F5F5F5
 
         # Layout principal
-        layout = MDBoxLayout(orientation='vertical', padding=[dp(20), dp(60), dp(20), dp(20)], spacing=dp(20))
+        layout = MDBoxLayout(
+            orientation='vertical',
+            padding=[dp(20), dp(60), dp(20), dp(20)],
+            spacing=dp(20)
+        )
 
         # Contenedor para el botón de volver atrás
         back_button_layout = MDBoxLayout(
@@ -48,14 +53,29 @@ class ProfileScreen(MDScreen):
         layout.add_widget(self.toolbar)
 
         # Avatar circular
-        avatar_layout = MDBoxLayout(size_hint=(None, None), size=(dp(120), dp(120)), pos_hint={'center_x': 0.5})
-        self.avatar = FitImage(source='', size_hint=(None, None), size=(dp(120), dp(120)), radius=[dp(60)])
+        avatar_layout = MDBoxLayout(
+            size_hint=(None, None),
+            size=(dp(120), dp(120)),
+            pos_hint={'center_x': 0.5}
+        )
+        self.avatar = FitImage(
+            source='',
+            size_hint=(None, None),
+            size=(dp(120), dp(120)),
+            radius=[dp(60)]
+        )
         self.avatar.md_bg_color = (0.2, 0.6, 0.8, 1)  # Color azul por defecto
         avatar_layout.add_widget(self.avatar)
         layout.add_widget(avatar_layout)
 
         # Ícono de edición en la esquina superior derecha del avatar
-        edit_icon = MDIconButton(icon='pencil', pos_hint={'right': 1, 'top': 1}, size_hint=(None, None), size=(dp(40), dp(40)), on_release=self.select_photo)
+        edit_icon = MDIconButton(
+            icon='pencil',
+            pos_hint={'right': 1, 'top': 1},
+            size_hint=(None, None),
+            size=(dp(40), dp(40)),
+            on_release=self.select_photo
+        )
         avatar_layout.add_widget(edit_icon)
 
         # FileManager para seleccionar foto
@@ -81,7 +101,7 @@ class ProfileScreen(MDScreen):
         # Campos de información
         self.name_field = MDTextField(
             hint_text='Nombre completo',
-            text='María González',  # Placeholder, integrar con app.user_name
+            text='María González',  # Placeholder
             disabled=True,
             size_hint_x=1,
             font_size='16sp'
@@ -90,7 +110,7 @@ class ProfileScreen(MDScreen):
 
         self.email_field = MDTextField(
             hint_text='Correo electrónico',
-            text='maria@email.com',  # Placeholder, integrar con app.user_email
+            text='maria@email.com',  # Placeholder
             disabled=True,
             size_hint_x=1,
             font_size='16sp'
@@ -144,8 +164,6 @@ class ProfileScreen(MDScreen):
         )
         layout.add_widget(self.save_button)
 
-
-
         self.add_widget(layout)
 
         self.edit_mode = False
@@ -154,10 +172,8 @@ class ProfileScreen(MDScreen):
 
     def open_nav_drawer(self):
         """Abre el menú lateral."""
-        # Navegar al menú principal donde está el nav_drawer
         if self.manager:
             self.manager.current = 'principal'
-            # Una vez en principal, abrir el drawer
             try:
                 principal_screen = self.manager.get_screen('principal')
                 principal_screen.nav_drawer.set_state('open')
@@ -207,16 +223,18 @@ class ProfileScreen(MDScreen):
             'email': self.email_field.text,
             'ciudad': self.city_field.text,
             'telefono': self.phone_field.text,
-            'fecha_registro': '01/01/2023',  # Mantener fijo o actualizar
+            'fecha_registro': '01/01/2023',
             'cuenta': 'Gratuita',
             'foto': self.avatar.source if self.avatar.source else ''
         }
         with open(self.user_data_file, 'w') as f:
             json.dump(data, f, indent=4)
         show_snackbar("✅ Datos guardados correctamente")
-        self.toggle_edit(None)  # Salir del modo edición
+        self.toggle_edit(None)
 
     def go_back(self):
         """Vuelve a la pantalla anterior."""
         if self.manager:
             self.manager.current = 'principal'
+
+
